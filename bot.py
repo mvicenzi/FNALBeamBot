@@ -1,7 +1,11 @@
+import argparse
+import signal
+import logging
 import requests
 import time
 from bs4 import BeautifulSoup
 from slack_sdk import WebClient
+
 from scripts.dbutils import init_db, is_timestamp_in_db, insert_message
 from scripts.config import url, slack_token, channel
 
@@ -35,9 +39,9 @@ def check_for_updates():
         
         response = client.chat_postMessage(
             channel=channel,
-            unfurl_links=True,
+            unfurl_links=False,
             blocks=slack_blocks,
-	    text=f':fermilab: *Channel 13 Notification* on *{date}*\n{message}\n>_For more information, check <https://www-bd.fnal.gov/Elog|AD Elog>_.'
+            text=f':fermilab: *Channel 13 Notification* on *{date}*\n{message}\n>_For more information, check <https://www-bd.fnal.gov/Elog|AD Elog>_.'
         )
         if response['ok']:
             insert_message(timestamp, date, message)
@@ -47,9 +51,24 @@ def check_for_updates():
         print("No updates to send!")
 
 
-def main():
+def signal_handler(sig, frame):
+    print('Keyboard Interrupt')
+    logging.info('Keyboard interrupt. Stopping the bot!')
+    sys.exit(0)
+
+def main(args):
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # load configuration file.
+    config = load_config('bot_config.json')
+    logging.info('Configuration loaded. Starting the bot...')
+
     init_db()
     check_for_updates()
 
+
 if __name__ == "__main__":
-    main()
+   args = argparse.ArgumentParser()
+   args.add_argument("-w", "--wait", default=120)
+   main(args.parse_args())
