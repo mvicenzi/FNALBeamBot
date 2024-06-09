@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from slack_sdk import WebClient
 
 from scripts.dbutils import init_db, is_timestamp_in_db, insert_message
-from scripts.config import slack_token, slack_channel
+from scripts.config import slack_token, slack_channels
 from scripts.config import log_directory, url 
 from scripts.payload import load_payload, update_payload
 
@@ -48,31 +48,45 @@ def check_for_updates():
     # if not prepare to send message to Slack
     if not is_timestamp_in_db(timestamp):
 
-        logging.info("Sending new message to {}...".format(slack_channel))
-
         payload = load_payload()
         payload = update_payload(payload, date, message)        
 
         logging.debug(payload['blocks'])
-   
-        # Initialize Slack client
-        try: 
+
+        success = False
+        try:
+            
+            # Initialize Slack client
             client = WebClient(token=slack_token)
+            
+            # Send massages to Slack channels
+            for slack_channel in slack_channels:
+            
+                try: 
+                    logging.info("Sending new message to {}...".format(slack_channel))
+                    response = client.chat_postMessage(
+                      channel=slack_channel,
+                      unfurl_links=False,
+                      blocks=payload['blocks'],
+                      text=f':fermilab: *Channel 13 Notification* on *{date}*\n{message}\n>_For more information, check <https://www-bd.fnal.gov/Elog|AD Elog>_.'
+                    )
 
-            response = client.chat_postMessage(
-              channel=slack_channel,
-              unfurl_links=False,
-              blocks=payload['blocks'],
-              text=f':fermilab: *Channel 13 Notification* on *{date}*\n{message}\n>_For more information, check <https://www-bd.fnal.gov/Elog|AD Elog>_.'
-              )
+		    # if (at least) one of the channels succeeds
+                    if response['ok']:
+                        success = True
 
-            if response['ok']:
+                except Exception as e:
+                    logging.error("Sending to {} caught an exception:\n{}".format(slack_channel,str(e)))
+     
+            # Update the db is at least one channel was able to get the message
+            # if we wait for all of them to succeed, we risk sending multiple identical messages      
+            if success:
                 insert_message(timestamp, date, message)
                 logging.info("Added to bot status db!")
-
+	
         except Exception as e:
-            logging.error("Sending to Slack caught an exception:\n{}".format(str(e)))
-
+            logging.error("Slack initilization failed:\n{}".format(str(e)))
+    
     else:
         logging.info("No updates to send!")
 
