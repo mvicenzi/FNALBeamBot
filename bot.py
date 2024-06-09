@@ -52,7 +52,9 @@ def check_for_updates():
 
         payload = load_payload()
         payload = update_payload(payload, date, message)        
-    
+
+        logging.debug(payload['blocks'])
+   
         # Initialize Slack client
         try: 
             client = WebClient(token=slack_token)
