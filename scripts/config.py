@@ -2,7 +2,7 @@
 ### Bot configuration parameters
 ###############################
 
-# Connection to Channel13
+# Connection to Channel 13
 url = 'https://www-bd.fnal.gov/cgi-bin/notify_mes.pl?ch13=text'
 
 # Connection to Slack workspace
