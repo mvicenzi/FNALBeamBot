@@ -1,0 +1,16 @@
+{
+  "blocks": [
+		{
+			"type": "divider"
+		},
+		{       "type": "section",
+                        "text": 
+			{
+				"type": "mrkdwn",
+				"text": ":fermilab: *Channel 13 Notification* on *%%date%%*\n>%%message%%\n>_For more information, check <https://www-bd.fnal.gov/Elog|AD Elog>_."
+			}
+		},
+        	{	"type": "divider"
+		}
+	    ]
+}
