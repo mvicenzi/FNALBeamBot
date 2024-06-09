@@ -42,7 +42,7 @@ def check_for_updates():
         logging.error("Scraping caught an exception:\n{}".format(str(e)))
         return
 
-    logging.info("Last entry in channel 13: [{},{},{}]".format(timestamp,date,message))
+    logging.info('Last entry in channel 13: ["{}","{}","{}"]'.format(timestamp,date,message))
 
     # Check if the timestamp is already in the database
     # if not prepare to send message to Slack
