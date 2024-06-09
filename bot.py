@@ -20,6 +20,7 @@ def check_for_updates():
 
     data = ''
     message = ''
+    response = None
 
     try:
         response = requests.get(url)
