@@ -116,4 +116,9 @@ if __name__ == "__main__":
     args = argparse.ArgumentParser()
     args.add_argument("-w", "--wait", default=120)
     args.add_argument("-l", "--logging", default=True)
-    main(args.parse_args())
+    
+    try:
+        main(args.parse_args())
+
+    except Exception as e:
+        logging.error("Previously uncaught exception:\n{}".format(str(e)))
