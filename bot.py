@@ -18,26 +18,30 @@ from scripts.payload import load_payload, update_payload
 
 def check_for_updates():
 
-    data = ''
-    message = ''
-    response = None
+    date = None
+    message = None
+    timestamp = None
 
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
-    
+ 
+        for h1 in soup.find_all('h1'):
+            if "Forbidden" in h1.text.strip():
+                raise ConnectionError('Channel 13 page {}\nUnable to access the notifications page... are you on the Fermilab network?'.format(h1.text.strip()))
+
         # Extract the latest message and its timestamp
         latest_notice = soup.find('tr').find('td')
         date = latest_notice.find("title").text.strip()
-        message = latest_notice.find("pre").text.strip()
+        message = latest_notice.find("pre").text.strip()    
+   
+        struct_time = time.strptime(date, "%d-%b-%Y %H:%M:%S")
+        timestamp = int(time.mktime(struct_time))   
    
     except Exception as e:
-        logging.error("Scraping caught an exception: {}".format(str(e)))
-        logging.error(response)
+        logging.error("Scraping caught an exception:\n{}".format(str(e)))
+        return
 
-    struct_time = time.strptime(date, "%d-%b-%Y %H:%M:%S")
-    timestamp = int(time.mktime(struct_time))   
-    
     logging.info("Last entry in channel 13: [{},{},{}]".format(timestamp,date,message))
 
     # Check if the timestamp is already in the database
@@ -65,8 +69,7 @@ def check_for_updates():
                 logging.info("Added to bot status db!")
 
         except Exception as e:
-            logging.error("Slack caught an exception: {}".format(str(e)))
-            logging.error(response)
+            logging.error("Sending to Slack caught an exception:\n{}".format(str(e)))
 
     else:
         logging.info("No updates to send!")

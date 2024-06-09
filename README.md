@@ -1,6 +1,6 @@
 # FNALBeamBot
 
-*FNALBeamBot* is a bot that allows to display _Channel 13_ beam notifications from the *Fermilab Accelerator Complex* in a _Slack_ channel.
+**FNALBeamBot** is a bot that allows to display _Channel 13_ beam notifications from the **Fermilab Accelerator Complex** in a _Slack_ channel.
 The bot monitors Channel 13 for updates with a tunable frequency, and reports any new messages to the specified channel.
 
 ## Setup
@@ -57,3 +57,4 @@ The bot can be started by running:
 ```
 python bot.py --wait 300 --logging [True/False]
 ```
+Please note that access to the Channel 13 text notifications is available only within the Fermilab network.
