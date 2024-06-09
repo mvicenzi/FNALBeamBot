@@ -7,7 +7,7 @@ url = 'https://www-bd.fnal.gov/cgi-bin/notify_mes.pl?ch13=text'
 
 # Connection to Slack workspace
 slack_token = 'xoxb-xxxx-xxxx-xxxx'
-slack_channel = '#fnal-beam-news'
+slack_channels = ['#fnal-beam-news','#icarus-shift-operations']
 message_template = 'botMessage.json'
 
 # DB file 
