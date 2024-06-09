@@ -29,7 +29,7 @@ db_file = 'notices.db'
 log_directory = './'
 ```
 ### Slack message
-Similarly, the `json` payload for the Slack message can be costumized in `botMessage.json`.
+Similarly, the `json` payload for the Slack message can be customized in `botMessage.json`.
 The two keywords `%%date%%` and `%%message%%` are replaced by the bot with the actual contents of the notification.
 ```
 {
