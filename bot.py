@@ -1,5 +1,4 @@
 import argparse
-import signal
 import logging
 import json
 import requests
@@ -10,9 +9,9 @@ from bs4 import BeautifulSoup
 from slack_sdk import WebClient
 
 from scripts.dbutils import init_db, is_timestamp_in_db, insert_message
-from scripts.config import slack_token, slack_channels
-from scripts.config import log_directory, url 
+from scripts.config import slack_token, slack_channels, log_directory, url 
 from scripts.payload import load_payload, update_payload
+from scripts.rotate import TimedPatternFileHandler
 
 #----------------------------------------------------
 
@@ -42,7 +41,7 @@ def check_for_updates():
         logging.error("Scraping caught an exception:\n{}".format(str(e)))
         return
 
-    logging.info('Last entry in channel 13: ["{}","{}","{}"]'.format(timestamp,date,message))
+    logging.info('Last entry in channel 13: ["{}","{}","{}"]'.format(timestamp,date,message.replace('\r','')))
 
     # Check if the timestamp is already in the database
     # if not prepare to send message to Slack
@@ -91,27 +90,20 @@ def check_for_updates():
         logging.info("No updates to send!")
 
 #----------------------------------------------------
-
-def signal_handler(sig, frame):
-    logging.info('Keyboard interrupt. Stopping the bot!')
-    sys.exit(0)
-
 #----------------------------------------------------
 
 def main(args):
 
-    signal.signal(signal.SIGINT, signal_handler)
+    ## Setup requested logging level
+    logger = logging.getLogger()
+    logger.setLevel(args.logging.upper())
+    
+    logfile = log_directory + 'bot_%Y%m%d.log' 
+    handler = TimedPatternFileHandler(logfile, when="MIDNIGHT", backupCount=7)
+    formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)    
+    logger.addHandler(handler)
 
-    ## Setup logging if requested
-    logfile = '/dev/null'
-    current_time = time.strftime('%Y%m%d')
-    if args.logging:
-        logfile = log_directory + 'bot_' + current_time + '.log'
-    logging.basicConfig(filename=logfile,
-                        level=logging.INFO,
-                        filemode='a',
-                        format='%(asctime)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
     logging.info('Logging setup completed. Starting the bot...')
 
     ## Setup the messages database
@@ -123,16 +115,20 @@ def main(args):
         check_for_updates()
         time.sleep(int(args.wait))
 
+    logging.info("Exiting...")
+
 #----------------------------------------------------
 
 if __name__ == "__main__":
 
     args = argparse.ArgumentParser()
-    args.add_argument("-w", "--wait", default=120)
-    args.add_argument("-l", "--logging", default=True)
+    args.add_argument("-w", "--wait", default=120, help='Time delay between checks to Channel 13 [s]')
+    args.add_argument("-l", "--logging", default="INFO", help='Logging level (DEBUG, INFO, WARNING, ERROR)')
     
     try:
         main(args.parse_args())
 
     except Exception as e:
         logging.error("Previously uncaught exception:\n{}".format(str(e)))
+        logging.info("Exiting...")
+        sys.exit(1)
