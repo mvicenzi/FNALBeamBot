@@ -52,9 +52,9 @@ The two keywords `%%date%%` and `%%message%%` are replaced by the bot with the a
 ```
 
 ## Running the bot
-Two bash scripts are provided to start (`runBeamBot.sh`) and stop (`stopBeamBot.sh`) the bot as a background process.
+Two bash scripts are provided to start (`startBeamBot.sh`) and stop (`stopBeamBot.sh`) the bot as a background process.
 The bot can be started by running:
 ```
-python bot.py --wait 300 --logging [True/False]
+python bot.py --wait 300 --logging [INFO,DEBUG,WARNING,ERROR]
 ```
 Please note that access to the Channel 13 text notifications is available only within the Fermilab network.
