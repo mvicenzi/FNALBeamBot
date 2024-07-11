@@ -31,7 +31,7 @@ def sanitize(string):
          last_word = w   
 	
     # if there were no periods and it was added by replacing a return character
-    # there is a now a spurious whitespae, so let's remove it
+    # there is a now a spurious whitespace, so let's remove it
     sanitized = sanitized.replace(' .','.')
 
     return sanitized
