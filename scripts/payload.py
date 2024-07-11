@@ -1,5 +1,7 @@
 import json
+import re
 from scripts.config import message_template
+
 
 def load_payload():
 
@@ -9,10 +11,29 @@ def load_payload():
 
 def sanitize(string):
 
-    # remove \n or \r characters
-    new_string = string.replace('\n','').replace('\r','')
-    # remove double spaces (in case of "\r \r blabla" )
-    sanitized = " ".join(new_string.split())
+    # remove return characters that break Slack messages
+    # replace \n or \r characters with periods
+    new_string = string.replace('\n',' . ').replace('\r',' . ')
+
+    # now clean up double or triple periods as needed!
+    # first split based on whitespaces
+    words = new_string.split()
+
+    sanitized = ''
+    last_word = ''
+    for w in words:
+
+         # if previous word ended in a period, don't add another one!
+         if '.' in w and '.' in last_word:
+             continue
+             
+         sanitized += w + ' '
+         last_word = w   
+	
+    # if there were no periods and it was added by replacing a return character
+    # there is a now a spurious whitespae, so let's remove it
+    sanitized = sanitized.replace(' .','.')
+
     return sanitized
 
 def update_payload(payload, date, message):
