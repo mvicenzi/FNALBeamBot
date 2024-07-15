@@ -24,7 +24,7 @@ def sanitize(string):
     for w in words:
 
          # if previous word ended in a period, don't add another one!
-         if '.' in w and '.' in last_word:
+         if '.' in w and (('.' in last_word) or (':' in last_word) or ("!" in last_word)):
              continue
              
          sanitized += w + ' '
