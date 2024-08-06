@@ -32,3 +32,11 @@ def insert_message(timestamp, date, message):
               (timestamp, date, message))
     conn.commit()
     conn.close()
+
+def remove_timestamp_in_db(timestamp):
+
+    conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    c.execute('DELETE FROM messages WHERE timestamp = ?', (timestamp,))
+    conn.commit()
+    conn.close()
