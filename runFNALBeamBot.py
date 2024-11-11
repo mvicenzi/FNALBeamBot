@@ -1,4 +1,3 @@
-import argparse
 import logging
 import json
 import requests
@@ -9,7 +8,7 @@ from bs4 import BeautifulSoup
 from slack_sdk import WebClient
 
 from scripts.dbutils import init_db, is_timestamp_in_db, insert_message
-from scripts.config import slack_token, slack_channels, log_directory, url 
+from scripts.config import slack_token, slack_channels, log_directory, log_level, url 
 from scripts.payload import load_payload, update_payload
 from scripts.rotate import TimedPatternFileHandler
 
@@ -58,7 +57,7 @@ def check_for_updates():
             # Initialize Slack client
             client = WebClient(token=slack_token)
             
-            # Send massages to Slack channels
+            # Send messages to Slack channels
             for slack_channel in slack_channels:
             
                 try: 
@@ -92,11 +91,11 @@ def check_for_updates():
 #----------------------------------------------------
 #----------------------------------------------------
 
-def main(args):
+def main():
 
     ## Setup requested logging level
     logger = logging.getLogger()
-    logger.setLevel(args.logging.upper())
+    logger.setLevel(log_level.upper())
     
     logfile = log_directory + 'bot_%Y%m%d.log' 
     handler = TimedPatternFileHandler(logfile, when="MIDNIGHT", backupCount=7)
@@ -111,9 +110,7 @@ def main(args):
     logging.info('Database initialization completed.')
     
     ## Check for updates and send messages
-    while True:
-        check_for_updates()
-        time.sleep(int(args.wait))
+    check_for_updates()
 
     logging.info("Exiting...")
 
@@ -121,12 +118,8 @@ def main(args):
 
 if __name__ == "__main__":
 
-    args = argparse.ArgumentParser()
-    args.add_argument("-w", "--wait", default=120, help='Time delay between checks to Channel 13 [s]')
-    args.add_argument("-l", "--logging", default="INFO", help='Logging level (DEBUG, INFO, WARNING, ERROR)')
-    
     try:
-        main(args.parse_args())
+        main()
 
     except Exception as e:
         logging.error("Previously uncaught exception:\n{}".format(str(e)))
