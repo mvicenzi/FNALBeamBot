@@ -4,14 +4,14 @@
 # This script is meant to setup the cronjob that runs the bot
 # Choose the interval in minutes (e.g. every 5 minutes)
 
-INTERVAL=5
+INTERVAL=1
 
 # ---------------------------------------
 
 echo "FNALBeamBot process is run via a cronjob."
 echo "Current user is $(whoami)."
 
-COMMAND="$(PWD)/runFNALBeamBot.sh"
+COMMAND="${PWD}/runFNALBeamBot.sh"
 CRON="*/$INTERVAL * * * * $COMMAND"
 
 if crontab -l 2>&1 | grep -Fq $COMMAND; then

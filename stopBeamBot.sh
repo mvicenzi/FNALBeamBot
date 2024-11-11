@@ -5,7 +5,7 @@
 echo "FNALBeamBot process is run via a cronjob."
 echo "Current user is $(whoami)."
 
-COMMAND="$(PWD)/runFNALBeamBot.sh"
+COMMAND="${PWD}/runFNALBeamBot.sh"
 
 if crontab -l 2>&1 | grep -Fq $COMMAND; then
   
