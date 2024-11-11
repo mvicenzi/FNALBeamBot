@@ -15,3 +15,4 @@ db_file = 'notices.db'
 
 # Logging
 log_directory = './'
+log_level = 'INFO'

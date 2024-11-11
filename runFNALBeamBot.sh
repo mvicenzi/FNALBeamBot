@@ -25,7 +25,7 @@ else
 fi
 
 echo "$now : Attempting to run FNALBeamBot!" >> ${LOGFILE}
-python3 ${BOTDIR}/runFNALBeamBot.py -l "INFO" >> ${LOGFILE} 2>&1
+python3 ${BOTDIR}/runFNALBeamBot.py
 
 # clean-up old attempt logs
 find $(dirname $LOGFILE)/attempt_* -type f -mtime +2 -exec rm -f {} \; >> ${LOGFILE} 2>&1

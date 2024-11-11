@@ -4,7 +4,7 @@
 # This script is meant to setup the cronjob that runs the bot
 # Choose the interval in minutes (e.g. every 5 minutes)
 
-INTERVAL=1
+INTERVAL=5
 
 # ---------------------------------------
 
