@@ -9,7 +9,7 @@ now=$(date "+%Y-%m-%d %T")
 # set your bot/log directory or the cronjob won't find the files!
 
 BOTDIR="/exp/icarus/app/users/mvicenzi/FNALBeamBot"
-LOGFILE="/exp/icarus/data/users/mvicenzi/botlogs/attempt_botstart_${host}_${timestamp}.log"
+LOGFILE="/exp/icarus/data/users/mvicenzi/botlogs/attempt_bot_${host}_${timestamp}.log"
 
 #-----------
 
@@ -28,7 +28,7 @@ echo "$now : Attempting to run FNALBeamBot!" >> ${LOGFILE}
 python3 ${BOTDIR}/runFNALBeamBot.py -l "INFO" >> ${LOGFILE} 2>&1
 
 # clean-up old attempt logs
-find ${BOTDIR}/attempt_botstart_* -type f -mtime +2 -exec rm -f {} \; >> ${LOGFILE} 2>&1
+find $(dirname $LOGFILE)/attempt_* -type f -mtime +2 -exec rm -f {} \; >> ${LOGFILE} 2>&1
 
 echo "$now : Execution completed!" >> ${LOGFILE}
 
