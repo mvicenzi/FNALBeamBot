@@ -58,7 +58,7 @@ def check_for_updates():
             # Initialize Slack client
             client = WebClient(token=slack_token)
             
-            # Send massages to Slack channels
+            # Send messages to Slack channels
             for slack_channel in slack_channels:
             
                 try: 
@@ -111,9 +111,7 @@ def main(args):
     logging.info('Database initialization completed.')
     
     ## Check for updates and send messages
-    while True:
-        check_for_updates()
-        time.sleep(int(args.wait))
+    check_for_updates()
 
     logging.info("Exiting...")
 
@@ -122,7 +120,6 @@ def main(args):
 if __name__ == "__main__":
 
     args = argparse.ArgumentParser()
-    args.add_argument("-w", "--wait", default=120, help='Time delay between checks to Channel 13 [s]')
     args.add_argument("-l", "--logging", default="INFO", help='Logging level (DEBUG, INFO, WARNING, ERROR)')
     
     try:
